@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
 //Button component
+//Exercise 1.10 
 const Button = ({ onClick, text }) => (
   <button onClick={onClick}>
     {text}
   </button>
 )
 
-//Statistics component
+//Statistic component
+//Exercise 1.10 (single statistic) 
+//Exercise 1.11 (updated for HTML table format)
 const Statistic = ({text, counter}) => (
   <tr>
     <td>{text}: </td>
@@ -16,6 +19,9 @@ const Statistic = ({text, counter}) => (
   </tr>
 )
 
+//Statistics component
+//Exercise 1.9 (dynamic rendering)
+//Exercise 1.11 (updated for HTML table format)
 const Statistics = ({good, neutral, bad}) => {  
   // Calculating total, average, percent positive
   const total = good + neutral + bad;     //total count
