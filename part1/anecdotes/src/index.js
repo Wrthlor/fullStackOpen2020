@@ -1,17 +1,66 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+
+// Random number generator function 
+// Between two numbers - min inclusive, max exclusive
+const getRandomInt = (min, max) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
+// Button for new anecdotes and to vote
+// Exercise 1.12, 1.13
+const Button = ({ onClick, text }) => (
+  <button onClick={onClick}>
+    {text}
+  </button>
+)
+
+const anecdotes = [
+  'If it hurts, do it more often',
+  'Adding manpower to a late software project makes it later!',
+  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+  'Premature optimization is the root of all evil.',
+  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
+]
+
+// Exercise 1.13 - added "Vote button"
+const App = (props) => {
+  const [selected, setSelected] = useState(0);
+  
+  // Creates zero filled array of anecdotes length 
+  // Using this for dynamic array length - future proofing for potential more anecdotes
+  const anecVotes = Array(anecdotes.length).fill(0);
+  const [votes, setVotes] = useState(anecVotes);
+
+  // Changes "selected" number, uses RNG to get different anecdotes   
+  const changeSelected = () => {
+    setSelected(getRandomInt(0,6));
+  }
+
+  // Increments number of votes for selected anecdote
+  // Note to self: For javascript updating states in arrays/objects requires to make a copy of the state
+  const changeVotes = () => {
+    let copy = [...votes];
+    copy[selected]++;
+    setVotes(copy)
+  }
+
+  return (    
+    <div>
+      <p>{props.anecdotes[selected]}</p>
+      <p>The above anecdote has <b>{votes[selected]}</b> votes</p>
+      <Button onClick={changeVotes} text='Vote' />
+      <Button onClick={changeSelected} text='New anecdote' />
+    </div>
+  )
+}
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App anecdotes={anecdotes}/>
   </React.StrictMode>,
   document.getElementById('root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
