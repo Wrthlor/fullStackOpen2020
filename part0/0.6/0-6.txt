@@ -1,0 +1,20 @@
+title New note (single page app version)
+
+actor User
+User->Browser: Clicks "Save" button
+
+Browser->Server: HTTP POST request (https://studies.cs.helsinki.fi/exampleapp/new_note_spa)
+
+note over Server: Server saves new note
+
+Server-->Browser: HTTP POST response (status code 201)
+note right of Server: 
+Code 201: 
+Request succeeded
+end note
+
+note over Browser:
+Server writes note to database,
+renders notes for display,
+stays on same page
+end note

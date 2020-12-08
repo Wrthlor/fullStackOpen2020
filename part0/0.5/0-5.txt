@@ -1,0 +1,23 @@
+title Single page app
+
+Browser->Server: HTTP GET request (https://studies.cs.helsinki.fi/exampleapp/spa)
+Server-->Browser: HTTP code for single-page application
+
+Browser->Server: HTTP GET request style sheet (https.../main.css)
+Server-->Browser: main.css
+
+Browser->Server: HTTP GET request JavaScript code (https.../main.js)
+Server-->Browser: main.js
+
+note over Browser:
+browser starts executing JS
+and requests JSON data
+end note
+
+Browser->Server: HTTP GET request raw data (https.../data.json)
+Server-->Browser: Content from data.json
+
+note over Browser:
+browser executes event handler, 
+renders notes for display
+end note

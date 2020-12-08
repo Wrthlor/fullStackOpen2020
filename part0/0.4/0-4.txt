@@ -4,8 +4,14 @@ actor User
 User->Browser: Clicks "Save" button
 
 Browser->Server: HTTP POST request (https://studies.cs.helsinki.fi/exampleapp/notes)
-note over Server: Server creates new note object with relevant content
+
+note over Server: 
+Server creates new note 
+object with relevant content
+end note
+
 Server-->Browser: HTTP POST response (status code 302)
+
 note right of Server: Code 302: URL redirect
 
 note over Browser: Browser reloads page
@@ -14,13 +20,20 @@ Browser->Server: HTTP GET: request style sheet (https://.../notes)
 Server-->Browser: notes HTML
 
 Browser->Server: HTTP GET: request style sheet (https://.../main.css)
-Server-->Browser: main.cc
+Server-->Browser: main.css
 
 Browser->Server: HTTP GET: request JavaScript code (https://.../main.js)
 Server-->Browser: main.js
 
-note over Browser: browser begins executing JS and requests JSON data
+note over Browser: 
+browser begins executing JS 
+and requests JSON data
+end note
+
 Browser->Server: HTTP GET: request raw data of the notes (https://.../data.json)
 Server-->Browser: Content from data.json
 
-note over Browser: browser executes event handler, renders notes for display
+note over Browser: 
+browser executes event handler, 
+renders notes for display
+end note
