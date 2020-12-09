@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 const Header = ({ name }) => {
   return (
-    <h1>{name}</h1>
+    <h2>{name}</h2>
   )
 };
 
@@ -13,7 +13,9 @@ const Total = ({ course }) => {
   const total = course.reduce( (sum, amnt) => sum + amnt.exercises , 0)
 
   return(
-    <p>Number of exercises {total}</p>
+    <p>
+      <b>Total number of exercises: {total}</b>
+    </p>
   ) 
 };
 
@@ -96,6 +98,7 @@ const App = () => {
 
   return (
     <div>
+      <h1>Web Development Curriculum</h1>
       {courses.map( (indivCourse) => <Course key={indivCourse.id} course={indivCourse} /> )}
     </div>
   )
