@@ -7,23 +7,25 @@ const Header = ({ name }) => {
   )
 };
 
+// Exercise 2.3
+// Utilized Array.prototype.reduce() method to determine sum
 const Total = ({ course }) => {
-  const sum = course.parts[0].exercises + course.parts[1].exercises + course.parts[2].exercises
+  const total = course.reduce( (sum, amnt) => sum + amnt.exercises , 0)
+
   return(
-    <p>Number of exercises {sum}</p>
+    <p>Number of exercises {total}</p>
   ) 
 };
 
-const Part = (props) => {
+const Part = ({ part }) => {
   return (
     <p>
-      {props.part.name} {props.part.exercises}
+      {part.name} {part.exercises}
     </p>    
   )
 };
 
 const Content = ({ parts }) => {
-  //console.log("What is this? ", parts)
   return (
     <div>
       {parts.map( partsInfo => <Part key={partsInfo.id} part={partsInfo} />) }
@@ -31,16 +33,15 @@ const Content = ({ parts }) => {
   )
 };
 
-// Exercise 2.1
-// Single Course component to contain Header, Content components 
-const Course = (props) => {
-  const course = props.course;
-  //console.log("Array: ", course.parts.map(partsInfo => partsInfo.name))
+// Exercises 2.1, 2.2, 2.3
+// Single Course component to contain Header, Content, Total components 
+const Course = ({ course }) => {
+
   return (
     <div>
       <Header name={course.name} />
       <Content parts={course.parts} />
-
+      <Total course={course.parts} />
     </div>
   )
 };
