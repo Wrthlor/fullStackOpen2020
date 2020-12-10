@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-
-/*
-const Note = ({ note }) => {
-    return (
-      <li>{note.content}</li>
-    )
-  }
-  */
+import Person from './components/Person'
 
 const App = () => {
   const [ persons, setPersons ] = useState([
@@ -14,36 +7,34 @@ const App = () => {
   ]);
   const [ newName, setNewName ] = useState('');
 
+  // Creates a new array of people  
+  const personList = persons.map((individual) => <Person key={individual.name} info={individual} />)
+
   // Function to deal with people, add new person to "phonebook"
-  const addPerson = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    // Person object (contains name, number, id, etc..
+    
+    // Person object (contains name, number, id, etc..)
     const personObject = {
         name: newName,
-    }
-
-    /*
-    console.log(persons);
-    console.log(persons[0]);
-    console.log(persons[0].name);
-    console.log("typeOf: ", typeof(newName), " Value: ", newName);
-    */
+    };
+    
+    // Updates persons state with new array (includes new person object)
     setPersons(persons.concat(personObject));
     setNewName("");
   };
 
   // Function to deal with new names
-  const handleNewName = (event) => {
-    //console.log(event.target.value);
+  const handleChange = (event) => {
     setNewName(event.target.value);
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addPerson}>
+      <form onSubmit={handleSubmit}>
         <div>
-          name: <input value={newName} onChange={handleNewName}/>
+          name: <input value={newName} onChange={handleChange}/>
         </div>
         <div>
           <button type="submit">add</button>
@@ -52,9 +43,7 @@ const App = () => {
 
       <h2>Numbers</h2>
       <div>
-          {persons.map((name) => {
-              return <ul>{name.name}</ul>;
-          })}
+          {personList}
       </div>
     </div>
   )
