@@ -7,20 +7,46 @@ const App = () => {
   ]);
   const [ newName, setNewName ] = useState('');
 
+
   // Creates a new array of people  
-  const personList = persons.map((individual) => <Person key={individual.name} info={individual} />)
+  const personList = persons.map( (individual) => <Person key={individual.name} info={individual} />)
 
   // Function to deal with people, add new person to "phonebook"
   const handleSubmit = (event) => {
     event.preventDefault();
     
-    // Person object (contains name, number, id, etc..)
-    const personObject = {
-        name: newName,
-    };
-    
-    // Updates persons state with new array (includes new person object)
-    setPersons(persons.concat(personObject));
+    // Checks if name already exists in phonebook (case-insensitive)
+    // Creates an array of existing names (all lower case) from person object
+    const names = persons.map( (individual) => individual.name.toLowerCase());
+
+    if (names.includes(newName.toLowerCase())) {
+        alert(`${newName} is already added to phonebook`);
+    }
+    else {
+        // Function to "title case" given name
+        // regex variable to get first letter of words in string 
+        // \b = word boundary, \w = one word character, g = global
+        const regex = /\b(\w)/g;
+        const titleCase = (str) => {
+            return str
+                .toLowerCase()
+                .replace(
+                    regex, 
+                    (s) => s.toUpperCase() );
+        };
+
+        // Capitalized first letter of names
+        const casedName = titleCase(newName);
+
+        // Person object (contains name, number, id, etc..)
+        const personObject = {
+            name: casedName,
+        };
+
+        // Updates persons state with new array (includes new person object)
+        setPersons(persons.concat(personObject));
+    }
+
     setNewName("");
   };
 
