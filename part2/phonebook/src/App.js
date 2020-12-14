@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import Person from './components/Person'
+import ListNames from './components/ListNames';
+import Form from './components/Form';
+import Filter from './components/Filter';
 
 const App = () => {
   const [ persons, setPersons ] = useState([
@@ -44,26 +46,32 @@ const App = () => {
     alert(`${casedName} has been added`);
   }
 
-  // Function to check for valid numbers - number input is numeric (can contain "singular dashes")
-  const validNumber = (numbr) => {
-    // \s* = zero or more whitespaces, \d+ = one or more numbers, -? = zero or one dash, 
-    // Supports up to 2 dashes in between 3 groups of numbers - ex. ###-###-#### (good), #-### (good), ##--# (bad), #-###-###-#### (bad)
-    const numbRegex = /^(\s*|\d+-?\d*-?\d*)$/;
-    return numbRegex.test(numbr);
+  // Function to check for valid names/numbers 
+  // Name is unique (not already added)
+  // Number input is numeric (can contain "singular dashes")
+  const validity = (check, item) => {
+    
+    if (item === "number") {
+      // \s* = zero or more whitespaces, \d+ = one or more numbers, -? = zero or one dash, 
+      // Supports up to 2 dashes in between 3 groups of numbers - ex. ###-###-#### (good), #-### (good), ##--# (bad), #-###-###-#### (bad)
+      const numbRegex = /^(\s*|\d+-?\d*-?\d*)$/;
+      return numbRegex.test(check);
+    }
+
+    if (item === "name") {
+      return lowerCasedNames.includes(check.toLowerCase())
+    }
   }
-
-  // Function to check for existing profile
-  const checkProfile = () => lowerCasedNames.includes(newName.toLowerCase());
-
+  
   // Function to deal with (potential) new profile submission
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (checkProfile) {
+    if (validity(newName, "name")) {
         alert(`${newName} is already added to phonebook`);
     }
     else {
-      if(!validNumber(newNumber)) {
+      if(!validity(newNumber, "number")) {
         alert('Invalid number');
       }
       else {
@@ -104,33 +112,25 @@ const App = () => {
     return people.name.toLowerCase().includes(nameFilter.toLowerCase())
   });
 
-  // Creates a new array of people (dislaying via <Person /> component)
-  const personList = filteredList.map( (individual) => <Person key={individual.name} info={individual} />)
-
   return (
     <div>
-      <h1>Phonebook</h1>
-      <div>
-        Filter list of names: <input value={nameFilter} onChange={(event) => handleChange(event, "filtering")} />
-      </div>
+      <h2>Phonebook</h2>
+      <Filter 
+        value={nameFilter} 
+        onChange={(event) => handleChange(event, "filtering")} 
+      />
 
-      <h2>Add new profile</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          Name: <input value={newName} onChange={(event) => handleChange(event, "name")} />
-        </div>
-        <div>
-          Number: <input value={newNumber} onChange={(event) => handleChange(event, "number")} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <h3>Add new profile</h3>
+      <Form 
+        handleSubmit={(event) => handleSubmit(event)}
+        nameValue={newName}
+        nameChange={(event) => handleChange(event, "name")}
+        numberValue={newNumber}
+        numberChange={(event) => handleChange(event, "number")}
+      />
 
-      <h2>Numbers</h2>
-      <div>
-          {personList}
-      </div>
+      <h3>Numbers</h3>
+      <ListNames people={filteredList} />
     </div>
   )
 };
