@@ -11,6 +11,6 @@ const ListNames = ({ people }) => {
             {personList}
         </div>
     )
-}
+};
 
 export default ListNames; 
