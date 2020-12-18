@@ -8,10 +8,7 @@ const App = () => {
     const [countries, setCountry] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Event handler function to deal with user entries
-    const searchBarEntry = (event) => setSearchTerm(event.target.value);
-
-    // Use effect hook to gather information from URL
+     // Use effect hook to gather information from database
     useEffect(() => {
         //console.log('effect');
         const eventHandler = response => {
@@ -27,16 +24,23 @@ const App = () => {
         return item.name.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
+    // Event handler function to deal with user entries
+    const searchBarEntry = (event) => setSearchTerm(event.target.value);
+
+    // Function for upon clicking button, changes searchTerm to the name of said country
+    const handleClick = (countryName) => setSearchTerm(countryName);
+
     return (
         <div>
             <Filter 
                 value={searchTerm} 
                 onChange={searchBarEntry} 
             />
-
             <br />
-
-            <List countries={filteredCountries} />
+            <List 
+                countries={filteredCountries} 
+                handleClick={handleClick}
+            />
         </div>
     );
 
