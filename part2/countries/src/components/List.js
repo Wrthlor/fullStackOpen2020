@@ -3,7 +3,6 @@ import Country from './Country';
 
 const List = ({ countries, handleClick, weatherData }) => {
 
-    //console.log("Weather: ", weatherData)
     // Declare variable which meet conditions (amount of countries from filter/search)
     const tooManyCountries = countries.length > 10;
     const multipleCountries = countries.length > 1 && countries.length <= 10;
