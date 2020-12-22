@@ -9,6 +9,11 @@ const App = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [weatherData, setWeather] = useState();
 
+    // Creates a "filtered" array from list of countries from database (case-insensitive)
+    const filteredCountries = countries.filter((item) => {
+        return item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
     // Use effect hook to gather information from database
     // Country data
     useEffect(() => {
@@ -39,12 +44,7 @@ const App = () => {
                     })   
             } 
         } 
-    });
-
-    // Creates a "filtered" array from list of countries from database (case-insensitive)
-    const filteredCountries = countries.filter((item) => {
-        return item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    });
+    }, [filteredCountries]);
 
     // Event handler function to deal with user entries
     const searchBarEntry = (event) => setSearchTerm(event.target.value);
