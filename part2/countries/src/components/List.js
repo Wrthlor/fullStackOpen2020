@@ -1,8 +1,9 @@
 import React from 'react';
 import Country from './Country';
 
-const List = ({ countries, handleClick }) => {
+const List = ({ countries, handleClick, weatherData }) => {
 
+    //console.log("Weather: ", weatherData)
     // Declare variable which meet conditions (amount of countries from filter/search)
     const tooManyCountries = countries.length > 10;
     const multipleCountries = countries.length > 1 && countries.length <= 10;
@@ -10,7 +11,7 @@ const List = ({ countries, handleClick }) => {
 
     // Creates new array of countries
     // Upon clicking the button, calls function handleClick() with country name as parameter (see App.js)
-    const countryList = countries.map( (item) => {
+    const countryList = countries.map((item) => {
         return (
             <div key={item.alpha3Code}>
                 {item.name} {" "}
@@ -25,8 +26,13 @@ const List = ({ countries, handleClick }) => {
     return (
         <div>
             {tooManyCountries && "Too many matches, please be more specific"}
-            {multipleCountries &&  countryList} 
-            {singleCountry && <Country country={countries[0]} />}
+            {multipleCountries && countryList} 
+            {singleCountry && 
+                <Country 
+                    theCountry={countries[0]} 
+                    theWeather={weatherData}
+                />
+            }
         </div>
     );
 };
