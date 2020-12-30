@@ -10,11 +10,9 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState("");
   const [ nameFilter, setNameFilter ] = useState("");
 
-  useEffect(() => {
-    console.log('effect')
-  
+  useEffect(() => {  
     const eventHandler = response => {
-      console.log('promise fulfilled')
+      //console.log('promise fulfilled')
       setPersons(response.data)
     }
   
@@ -49,9 +47,17 @@ const App = () => {
         number: newNumber,
     };
 
+    // Sends personObject to server 
     // Updates persons state with new array (includes new person object)
-    setPersons(persons.concat(personObject));
-    alert(`${casedName} has been added`);
+    axios
+      .post('http://localhost:3001/persons', personObject)
+      .then(response => {
+        setPersons(persons.concat(response.data));
+        alert(`${casedName} has been added`);
+      })
+      .catch(error => {
+        console.error(error);
+      })
   }
 
   // Function to check for valid names/numbers 
