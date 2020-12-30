@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ListNames from './components/ListNames';
 import Form from './components/Form';
 import Filter from './components/Filter';
-import axios from 'axios';
+
+import phonebook from './services/profiles';
 
 const App = () => {
   const [ persons, setPersons ] = useState([]);
@@ -10,14 +11,15 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState("");
   const [ nameFilter, setNameFilter ] = useState("");
 
-  useEffect(() => {  
-    const eventHandler = response => {
-      //console.log('promise fulfilled')
-      setPersons(response.data)
-    }
-  
-    const promise = axios.get('http://localhost:3001/persons')
-    promise.then(eventHandler)
+  useEffect(() => {    
+    phonebook
+      .getAll()
+      .then(initialProfiles => {
+        setPersons(initialProfiles);
+      })
+      .catch(error => {
+        console.error(error);
+      })
   }, []);
 
   // Creates an array of existing names (all lower case) from person object
@@ -49,10 +51,10 @@ const App = () => {
 
     // Sends personObject to server 
     // Updates persons state with new array (includes new person object)
-    axios
-      .post('http://localhost:3001/persons', personObject)
+    phonebook
+      .create(personObject)
       .then(response => {
-        setPersons(persons.concat(response.data));
+        setPersons(persons.concat(response));
         alert(`${casedName} has been added`);
       })
       .catch(error => {
