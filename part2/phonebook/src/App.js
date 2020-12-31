@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import ListNames from './components/ListNames';
+
+import List from './components/List';
 import Form from './components/Form';
 import Filter from './components/Filter';
 
@@ -22,12 +23,9 @@ const App = () => {
       })
   }, []);
 
-  // Creates an array of existing names (all lower case) from person object
   const lowerCasedNames = persons.map( (individual) => individual.name.toLowerCase());
 
-  // Creates a new profile to be "added" to the phonebook
   const createProfile = () => {
-    // Function to "title case" given name
     // regex variable to get first letter of words in string 
     // \b = word boundary, \w = one word character, g = global
     const regex = /\b(\w)/g;
@@ -40,10 +38,8 @@ const App = () => {
             );
     };
 
-    // Capitalized first letter of names
     const casedName = titleCase(newName);
 
-    // Person object (contains name, number, id, etc..)
     const personObject = {
         name: casedName,
         number: newNumber,
@@ -65,8 +61,7 @@ const App = () => {
   // Function to check for valid names/numbers 
   // Name is unique (not already added)
   // Number input is numeric (can contain "singular dashes")
-  const validity = (check, item) => {
-    
+  const validity = (check, item) => {    
     if (item === "number") {
       // \s* = zero or more whitespaces, \d+ = one or more numbers, -? = zero or one dash, 
       // Supports up to 2 dashes in between 3 groups of numbers - ex. ###-###-#### (good), #-### (good), ##--# (bad), #-###-###-#### (bad)
@@ -78,9 +73,8 @@ const App = () => {
       return lowerCasedNames.includes(check.toLowerCase())
     }
   }
-  
-  // Function to deal with (potential) new profile submission
-  const handleSubmit = (event) => {
+
+  const handleSubmit = event => {
     event.preventDefault();
 
     if (validity(newName, "name")) {
@@ -91,7 +85,6 @@ const App = () => {
         alert('Invalid number');
       }
       else {
-        // Checks for name input if number is given
         if (newName === "" && newNumber !== "") {
           alert('Please enter a name');
         }
@@ -105,26 +98,26 @@ const App = () => {
     setNewNumber("");
   };
 
-  // Function to deal with new entries
-  // "type" argument to determine event handler type
-  const handleChange = (event, type) => {
-    switch(type) {
-      case "name":
-        setNewName(event.target.value);
-        break;
-      case "number":
-        setNewNumber(event.target.value);
-        break;
-      case "filtering":
-        setNameFilter(event.target.value);
-        break;
-      default:
-        break;
-    }
-  };
+  const handleDelete = id => {
+    const indiv = persons.find(p => p.id === id);
+    const confirmDel = window.confirm(`Delete "${indiv.name}"?`);
 
-  // Creates new array with filtered list of names (case-insensitive)
-  const filteredList = persons.filter( (people) => {
+    if(confirmDel) {
+      phonebook
+        .deletePerson(id)
+        .then(() => {
+          const filteredPeople = persons.filter(people => people.id !== id);
+          setPersons(filteredPeople);
+          setNameFilter("");
+        })
+    }
+  }
+
+  const handleNewName = event => setNewName(event.target.value);
+  const handleNewNumber = event => setNewNumber(event.target.value);
+  const handleNameFilter = event => setNameFilter(event.target.value);
+
+  const filteredList = persons.filter(people => {
     return people.name.toLowerCase().includes(nameFilter.toLowerCase())
   });
 
@@ -133,20 +126,23 @@ const App = () => {
       <h2>Phonebook</h2>
       <Filter 
         value={nameFilter} 
-        onChange={(event) => handleChange(event, "filtering")} 
+        onChange={handleNameFilter} 
       />
 
       <h3>Add new profile</h3>
       <Form 
-        handleSubmit={(event) => handleSubmit(event)}
+        handleSubmit={handleSubmit}
         nameValue={newName}
-        nameChange={(event) => handleChange(event, "name")}
+        nameChange={handleNewName}
         numberValue={newNumber}
-        numberChange={(event) => handleChange(event, "number")}
+        numberChange={handleNewNumber}
       />
 
       <h3>Numbers</h3>
-      <ListNames people={filteredList} />
+      <List
+        people={filteredList} 
+        handleDelete={handleDelete}
+      />
     </div>
   )
 };
