@@ -16,17 +16,16 @@ const deletePerson = id => {
     return request.then(response => response.data);
 }
 
-/*
-// To be included - updates if there's an existing object (profile with existing name)
 const update = (id, newObject) => {
     const request = axios.put(`${baseURL}/${id}`, newObject);
     return request.then(response => response.data);
 }
-*/
+
 
 const profiles = {
     getAll,
     create,
-    deletePerson
+    deletePerson,
+    update
 };
 export default profiles;

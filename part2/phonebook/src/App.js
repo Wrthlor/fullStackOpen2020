@@ -15,29 +15,25 @@ const App = () => {
   useEffect(() => {    
     phonebook
       .getAll()
-      .then(initialProfiles => {
-        setPersons(initialProfiles);
-      })
-      .catch(error => {
-        console.error(error);
-      })
+      .then(initialProfiles => setPersons(initialProfiles))
+      .catch(error => console.error(error))
   }, []);
 
-  const lowerCasedNames = persons.map( (individual) => individual.name.toLowerCase());
+  const lowerCasedNames = persons.map(individual => individual.name.toLowerCase());
+
+  // regex variable to get first letter of words in string 
+  // \b = word boundary, \w = one word character, g = global
+  const titleCase = str => {
+    const regex = /\b(\w)/g;
+    return str
+      .toLowerCase()
+      .replace(
+        regex, 
+        s => s.toUpperCase() 
+      );
+  };
 
   const createProfile = () => {
-    // regex variable to get first letter of words in string 
-    // \b = word boundary, \w = one word character, g = global
-    const regex = /\b(\w)/g;
-    const titleCase = (str) => {
-        return str
-            .toLowerCase()
-            .replace(
-                regex, 
-                (s) => s.toUpperCase() 
-            );
-    };
-
     const casedName = titleCase(newName);
 
     const personObject = {
@@ -53,50 +49,63 @@ const App = () => {
         setPersons(persons.concat(response));
         alert(`${casedName} has been added`);
       })
-      .catch(error => {
-        console.error(error);
-      })
+      .catch(error => console.error(error))
   }
 
-  // Function to check for valid names/numbers 
-  // Name is unique (not already added)
   // Number input is numeric (can contain "singular dashes")
-  const validity = (check, item) => {    
-    if (item === "number") {
-      // \s* = zero or more whitespaces, \d+ = one or more numbers, -? = zero or one dash, 
-      // Supports up to 2 dashes in between 3 groups of numbers - ex. ###-###-#### (good), #-### (good), ##--# (bad), #-###-###-#### (bad)
-      const numbRegex = /^(\s*|\d+-?\d*-?\d*)$/;
-      return numbRegex.test(check);
-    }
+  // \s* = zero or more whitespaces, \d+ = one or more numbers, -? = zero or one dash, 
+  // Supports up to 2 dashes in between 3 groups of numbers - ex. ###-###-#### (good), #-### (good), ##--# (bad), #-###-###-#### (bad)
+  const checkValidNumber = number => {    
+    const numbRegex = /^(\s*|\d+-?\d*-?\d*)$/;
+    return numbRegex.test(number);
+  }
 
-    if (item === "name") {
-      return lowerCasedNames.includes(check.toLowerCase())
-    }
+  const checkDupeProfile = name => lowerCasedNames.includes(name.toLowerCase())
+
+  const confirmUpdate = name =>  window.confirm(`"${name}" is already added to phonebook, replace the old number with a new one?`);
+
+  const updateProfile = (name, newNumb) => {
+    const oldProf = persons.find(p => p.name.toLowerCase() === name.toLowerCase());
+    const idVal = oldProf.id;
+    const updatedProf = {...oldProf, number: newNumb};
+
+    phonebook 
+      .update(idVal, updatedProf)
+      .then(updatedP => 
+        setPersons(persons.map(p => 
+          p.id !== idVal ? p : updatedP
+        ))
+      )
+      .catch(error => console.error(error))
+
+    alert(`${titleCase(name)} has been update`);
   }
 
   const handleSubmit = event => {
     event.preventDefault();
 
-    if (validity(newName, "name")) {
-        alert(`${newName} is already added to phonebook`);
+    if(!checkValidNumber(newNumber)) {
+      alert('Invalid number');
     }
     else {
-      if(!validity(newNumber, "number")) {
-        alert('Invalid number');
+      if (newName === "" && newNumber !== "") {
+        alert('Please enter a name');
       }
       else {
-        if (newName === "" && newNumber !== "") {
-          alert('Please enter a name');
+        if (checkDupeProfile(newName)) {
+          if (confirmUpdate(newName)) {
+            updateProfile(newName, newNumber);
+          }
         }
         else {
           createProfile();
-        }
+        }        
       }
     }
 
     setNewName("");
     setNewNumber("");
-  };
+  }
 
   const handleDelete = id => {
     const indiv = persons.find(p => p.id === id);
@@ -110,6 +119,7 @@ const App = () => {
           setPersons(filteredPeople);
           setNameFilter("");
         })
+        .catch(error => console.error(error))
     }
   }
 
@@ -117,9 +127,9 @@ const App = () => {
   const handleNewNumber = event => setNewNumber(event.target.value);
   const handleNameFilter = event => setNameFilter(event.target.value);
 
-  const filteredList = persons.filter(people => {
-    return people.name.toLowerCase().includes(nameFilter.toLowerCase())
-  });
+  const filteredList = persons.filter(people => 
+    people.name.toLowerCase().includes(nameFilter.toLowerCase())
+  )
 
   return (
     <div>
