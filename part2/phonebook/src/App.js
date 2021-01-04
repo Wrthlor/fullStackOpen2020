@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import List from './components/List';
 import Form from './components/Form';
 import Filter from './components/Filter';
+import Notification from './components/Notification'
 
 import phonebook from './services/profiles';
 
@@ -11,6 +12,8 @@ const App = () => {
   const [ newName, setNewName ] = useState("");
   const [ newNumber, setNewNumber ] = useState("");
   const [ nameFilter, setNameFilter ] = useState("");
+  const [ notificationMessage, setNotificationMessage ] = useState(null);
+  const [ notificationType, setNotificationType ] = useState(null);
 
   useEffect(() => {    
     phonebook
@@ -33,6 +36,15 @@ const App = () => {
       );
   };
 
+  const getNotification = (message, type) => {
+    setNotificationMessage(message);
+    setNotificationType(type);
+    setTimeout(() => {
+      setNotificationMessage(null);
+      setNotificationType(null);
+    }, 5000);
+  }
+
   const createProfile = () => {
     const casedName = titleCase(newName);
 
@@ -47,9 +59,9 @@ const App = () => {
       .create(personObject)
       .then(response => {
         setPersons(persons.concat(response));
-        alert(`${casedName} has been added`);
+        getNotification(`"${casedName}" has been added`, "update");
       })
-      .catch(error => console.error(error))
+      .catch(error => console.log(error))
   }
 
   // Number input is numeric (can contain "singular dashes")
@@ -62,38 +74,39 @@ const App = () => {
 
   const checkDupeProfile = name => lowerCasedNames.includes(name.toLowerCase())
 
-  const confirmUpdate = name =>  window.confirm(`"${name}" is already added to phonebook, replace the old number with a new one?`);
+  const confirmUpdate = message =>  window.confirm(message);
 
   const updateProfile = (name, newNumb) => {
-    const oldProf = persons.find(p => p.name.toLowerCase() === name.toLowerCase());
+    const oldProf = persons.find(people => people.name.toLowerCase() === name.toLowerCase());
     const idVal = oldProf.id;
     const updatedProf = {...oldProf, number: newNumb};
 
     phonebook 
       .update(idVal, updatedProf)
-      .then(updatedP => 
-        setPersons(persons.map(p => 
-          p.id !== idVal ? p : updatedP
-        ))
-      )
-      .catch(error => console.error(error))
-
-    alert(`${titleCase(name)} has been update`);
+      .then(updatedP => {
+        setPersons(persons.map(people => people.id !== idVal ? people : updatedP));
+        getNotification(`${titleCase(name)}'s number has been updated`, "update");
+      })
+      .catch(error => {
+        setPersons(persons.filter(people => people.id !== idVal));
+        getNotification(`Information for "${titleCase(name)}" has already been removed from server`, "error");
+        console.log(error);
+      })
   }
 
   const handleSubmit = event => {
     event.preventDefault();
 
     if(!checkValidNumber(newNumber)) {
-      alert('Invalid number');
+      getNotification(`Invalid number`, "error");
     }
     else {
       if (newName === "" && newNumber !== "") {
-        alert('Please enter a name');
+        getNotification(`Please enter a name`, "error");
       }
       else {
         if (checkDupeProfile(newName)) {
-          if (confirmUpdate(newName)) {
+          if (confirmUpdate(`"${newName}" is already added to server, replace the old number with a new one?`)) {
             updateProfile(newName, newNumber);
           }
         }
@@ -108,18 +121,22 @@ const App = () => {
   }
 
   const handleDelete = id => {
-    const indiv = persons.find(p => p.id === id);
+    const indiv = persons.find(people => people.id === id);
     const confirmDel = window.confirm(`Delete "${indiv.name}"?`);
 
     if(confirmDel) {
       phonebook
         .deletePerson(id)
         .then(() => {
-          const filteredPeople = persons.filter(people => people.id !== id);
-          setPersons(filteredPeople);
+          setPersons(persons.filter(people => people.id !== id));
+          getNotification(`"${indiv.name}" has been removed from server`, "update");
           setNameFilter("");
         })
-        .catch(error => console.error(error))
+        .catch(error => {
+          setPersons(persons.filter(people => people.id !== id))
+          getNotification(`Information of "${indiv.name}" has already been removed from server`, "error");
+          console.log(error)
+        })
     }
   }
 
@@ -140,6 +157,10 @@ const App = () => {
       />
 
       <h3>Add new profile</h3>
+      <Notification 
+        message={notificationMessage}
+        className={notificationType}
+      />
       <Form 
         handleSubmit={handleSubmit}
         nameValue={newName}

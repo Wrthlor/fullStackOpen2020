@@ -22,8 +22,13 @@
     },
     {
       "name": "Levi",
-      "number": "100",
+      "number": "1337",
       "id": 5
+    },
+    {
+      "name": "Mikasa Ackerman",
+      "number": "1",
+      "id": 6
     }
   ]
 }

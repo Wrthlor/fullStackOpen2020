@@ -3,7 +3,14 @@ const baseURL = "http://localhost:3001/phonebook";
 
 const getAll = () => {
     const request = axios.get(baseURL);
-    return request.then(response => response.data);
+    /*
+    // Hard-coded profile for error testing
+    const nonExisting = {
+        name: "No Man",
+        number: "000-000-0000",
+        id: "1000"
+    }*/
+    return request.then(response => response.data/*.concat(nonExisting)*/);
 }
 
 const create = newObject => {
