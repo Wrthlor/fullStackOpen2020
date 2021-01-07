@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+app.use(express.json());
+
 let phonebook = [
     {
         id: 1,
@@ -58,6 +60,32 @@ app.delete('/api/persons/:id', (req, res) => {
     phonebook = phonebook.filter(person => person.id !== id);
 
     res.status(204).end();
+})
+
+const generateId = () => {
+    const min = 0;
+    const max = 8589934592; // Number of bits in 1 Gibibyte (GiB)
+    return Math.floor(Math.random() * (max - min) + min );
+}
+
+app.post('/api/persons', (req, res) => {
+    const body = req.body;
+
+    if (!body.name) {
+        return res.status(400).json({
+            error: 'Name missing'
+        });
+    }
+
+    const person = {
+        id: generateId(),
+        name: body.name,
+        number: body.number
+    }
+
+    phonebook = phonebook.concat(person);
+
+    res.json(person);
 })
 
 const PORT = 3001;
