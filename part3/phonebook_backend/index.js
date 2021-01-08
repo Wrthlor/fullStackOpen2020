@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
-
-app.use(express.json());
+var morgan = require('morgan');
 
 let phonebook = [
     {
@@ -26,8 +25,21 @@ let phonebook = [
     }
 ]
 
+app.use(morgan('tiny'));
+
+app.use(express.json());
+
 app.get('/', (req, res) => {
     res.send('<h1><b>Hello Wooorld!</b><\h1>');
+})
+
+app.get('/info', (req, res) => {
+    let message = (
+        `<p>Phonebook has info for ${phonebook.length} people</p>` + 
+        `<p>${new Date().toString()}</p>`
+    );
+    res.send(message)
+
 })
 
 app.get('/api/persons', (req, res) => {
@@ -46,15 +58,6 @@ app.get('/api/persons/:id', (req, res) => {
     }
 })
 
-app.get('/info', (req, res) => {
-    let message = (
-        `<p>Phonebook has info for ${phonebook.length} people</p>` + 
-        `<p>${new Date().toString()}</p>`
-    );
-    res.send(message)
-
-})
-
 app.delete('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id);
     phonebook = phonebook.filter(person => person.id !== id);
@@ -62,13 +65,12 @@ app.delete('/api/persons/:id', (req, res) => {
     res.status(204).end();
 })
 
-const generateId = () => {
-    const min = 0;
-    const max = 8589934592; // Number of bits in 1 Gibibyte (GiB)
-    return Math.floor(Math.random() * (max - min) + min );
-}
-
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res) => {    
+    const generateId = () => {
+        const min = 0;
+        const max = 8589934592; // Number of bits in 1 Gibibyte (GiB)
+        return Math.floor(Math.random() * (max - min) + min );
+    }
     const body = req.body;
 
     if (!body.name) {
@@ -97,6 +99,8 @@ app.post('/api/persons', (req, res) => {
 
     res.json(person);
 })
+
+
 
 const PORT = 3001;
 app.listen(PORT, () => {
