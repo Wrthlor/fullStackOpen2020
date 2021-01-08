@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-var morgan = require('morgan');
+const morgan = require('morgan');
 
 let phonebook = [
     {
@@ -25,9 +25,21 @@ let phonebook = [
     }
 ]
 
-app.use(morgan('tiny'));
+// Create custom token to output data sent in HTTP POST requests only
+morgan.token('person', (req, res) => {
+    if (req.method === "POST") {
+        return JSON.stringify(req.body);
+    }
+    return null;
+})
 
 app.use(express.json());
+
+app.use(
+    morgan(
+        ":method :url :status :res[content-length] - :response-time ms :person"
+    )
+);
 
 app.get('/', (req, res) => {
     res.send('<h1><b>Hello Wooorld!</b><\h1>');
@@ -99,8 +111,6 @@ app.post('/api/persons', (req, res) => {
 
     res.json(person);
 })
-
-
 
 const PORT = 3001;
 app.listen(PORT, () => {
