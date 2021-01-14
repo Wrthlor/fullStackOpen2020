@@ -1,6 +1,11 @@
 const express = require('express');
 const app = express();
+
+const cors = require('cors');
 const morgan = require('morgan');
+
+app.use(cors());
+app.use(express.json());
 
 let phonebook = [
     {
@@ -22,6 +27,11 @@ let phonebook = [
         id: 4,
         name: "Mary Poppendieck",
         number: "39-23-6423122"
+    },
+    {
+        id: 5,
+        name: "Levi Ackerman",
+        number: "1337"
     }
 ]
 
@@ -32,8 +42,6 @@ morgan.token('person', (req, res) => {
     }
     return null;
 })
-
-app.use(express.json());
 
 app.use(
     morgan(
