@@ -58,17 +58,16 @@ app.get('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {    
     const body = req.body;
     
-    /*
-    if (body.name === undefined) {
+    if (!body.name) {
         return res.status(400).json({
             error: 'Name is missing'
         });
     }
-    if (body.number === undefined) {
+    if (!body.number) {
         return res.status(400).json({
             error: 'Number is missing'
-        })
-    }
+        });
+    }/*
     if (Person.find(person => person.name === body.name)) {
         return res.status(400).json({
             error: 'Name already exists in the phonebook'
@@ -85,6 +84,7 @@ app.post('/api/persons', (req, res) => {
         .then(savedPerson => {
             res.json(savedPerson);
         })
+        .catch(error => next(error));
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -92,6 +92,22 @@ app.delete('/api/persons/:id', (req, res) => {
         .findByIdAndRemove(req.params.id)
         .then(result => {
             res.status(204).end();
+        })
+        .catch(error => next(error));
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+    const body = req.body;
+
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+
+    Person
+        .findByIdAndUpdate(req.params.id, person, { new: true })
+        .then(updatedPerson => {
+            res.json(updatedPerson);
         })
         .catch(error => next(error));
 })
