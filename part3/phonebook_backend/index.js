@@ -56,38 +56,35 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) => {    
-    const generateId = () => {
-        const min = 0;
-        const max = 8589934592; // Number of bits in 1 Gibibyte (GiB)
-        return Math.floor(Math.random() * (max - min) + min );
-    }
     const body = req.body;
-
-    if (!body.name) {
+    
+    /*
+    if (body.name === undefined) {
         return res.status(400).json({
             error: 'Name is missing'
         });
     }
-    if (!body.number) {
+    if (body.number === undefined) {
         return res.status(400).json({
             error: 'Number is missing'
         })
     }
-    if (phonebook.find(person => person.name === body.name)) {
+    if (Person.find(person => person.name === body.name)) {
         return res.status(400).json({
             error: 'Name already exists in the phonebook'
         })
-    }
+    }*/
 
-    const person = {
-        id: generateId(),
+    const person = new Person ({
         name: body.name,
         number: body.number
-    }
+    })
 
-    phonebook = phonebook.concat(person);
-
-    res.json(person);
+    person
+        .save()
+        .then(savedPerson => {
+            res.json(savedPerson);
+        })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
