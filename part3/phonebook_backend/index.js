@@ -37,25 +37,24 @@ app.get('/info', (req, res) => {
                 `<p>${new Date().toString()}</p>`
             );
         })
+        .catch(error => next(error));
 })
 
 app.get('/api/persons', (req, res) => {
     Person
         .find({})
-        .then(people => {
-            res.json(people);
-        })
+        .then(people => res.json(people))
+        .catch(error => next(error));
 })
 
 app.get('/api/persons/:id', (req, res) => {
     Person
         .findById(req.params.id)
-        .then(people => {
-            res.json(people);
-        })
+        .then(people => res.json(people))
+        .catch(error => next(error));
 })
 
-app.post('/api/persons', (req, res) => {    
+app.post('/api/persons', (req, res, next) => {    
     const body = req.body;
     
     if (!body.name) {
@@ -67,12 +66,7 @@ app.post('/api/persons', (req, res) => {
         return res.status(400).json({
             error: 'Number is missing'
         });
-    }/*
-    if (Person.find(person => person.name === body.name)) {
-        return res.status(400).json({
-            error: 'Name already exists in the phonebook'
-        })
-    }*/
+    }
 
     const person = new Person ({
         name: body.name,
@@ -81,18 +75,14 @@ app.post('/api/persons', (req, res) => {
 
     person
         .save()
-        .then(savedPerson => {
-            res.json(savedPerson);
-        })
+        .then(savedPerson => res.json(savedPerson))
         .catch(error => next(error));
 })
 
 app.delete('/api/persons/:id', (req, res) => {
     Person 
         .findByIdAndRemove(req.params.id)
-        .then(result => {
-            res.status(204).end();
-        })
+        .then(result => res.status(204).end())
         .catch(error => next(error));
 })
 
@@ -106,9 +96,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 
     Person
         .findByIdAndUpdate(req.params.id, person, { new: true })
-        .then(updatedPerson => {
-            res.json(updatedPerson);
-        })
+        .then(updatedPerson => res.json(updatedPerson))
         .catch(error => next(error));
 })
 
@@ -117,6 +105,9 @@ const errorHandler = (error, req, res, next) => {
 
     if (error.name == 'CastError' && error.kind == 'ObjectId') {
         return res.status(400).send({ error: 'malformatted id' });
+    }
+    else if (error.name === 'ValidationError') {
+        return res.status(400).send({ error: error.message})
     }
 
     next(error);

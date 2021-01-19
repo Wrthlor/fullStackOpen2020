@@ -97,22 +97,37 @@ const App = () => {
   const handleSubmit = event => {
     event.preventDefault();
 
-    if(!checkValidNumber(newNumber)) {
-      getNotification(`Invalid number`, "error");
+    if (newName === "") {
+      getNotification(`Please enter a name`, "error");
     }
     else {
-      if (newName === "" && newNumber !== "") {
-        getNotification(`Please enter a name`, "error");
+      if (newName.length < 3) {
+        getNotification(`Name (${newName}) is shorter than the minimum length (3).`, "error")
       }
       else {
-        if (checkDupeProfile(newName)) {
-          if (confirmUpdate(`"${newName}" is already added to server, replace the old number with a new one?`)) {
-            updateProfile(newName, newNumber);
-          }
+        if (newNumber === "") {
+          getNotification(`Please enter a number`, "error");
         }
         else {
-          createProfile();
-        }        
+          if (!checkValidNumber(newNumber)) {
+            getNotification(`Invalid number`, "error");
+          }
+          else {
+            if (newNumber.length < 8) {
+              getNotification(`Number (${newNumber}) is shorter than the minimum length (8).`, "error")
+            }
+            else {
+              if (checkDupeProfile(newName)) {
+                if (confirmUpdate(`"${newName}" is already added to server, replace the old number with a new one?`)) {
+                  updateProfile(newName, newNumber);
+                }
+              }
+              else {
+                createProfile();
+              }  
+            }
+          }
+        }
       }
     }
 
