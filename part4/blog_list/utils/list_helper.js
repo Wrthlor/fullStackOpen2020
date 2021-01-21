@@ -1,16 +1,11 @@
-const dummy = (blogs) => 1;
+const dummy = () => 1;
 
 const totalLikes = (blogs) => {
-    
-    if (blogs.length !== 0) {    
-        let sum = 0;
-        blogs.map(blog => sum += blog.likes);
-        
-        return sum;
-    }
-    else {
-        return 0;
-    }
+    const total = blogs.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.likes;
+    }, 0);
+
+    return total;   
 }
 
 module.exports = {
