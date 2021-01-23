@@ -108,3 +108,21 @@ describe('favorite blog', () => {
         })
     })
 })
+
+describe('most blogs', () => {
+    test('single blog returns author of only blog', () => {
+        const result = listHelper.mostBlogs(singleBlog);
+        expect(result).toEqual({
+            author: 'Edsger W. Dijkstra',
+            blogs: 1
+        })
+    })
+
+    test('multiple blogs returns author with most blogs', () => {
+        const result = listHelper.mostBlogs(multipleBlogs);
+        expect(result).toEqual({
+            author: 'Robert C. Martin',
+            blogs: 3
+        })
+    })
+})
