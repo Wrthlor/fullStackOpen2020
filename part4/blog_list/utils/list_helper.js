@@ -1,6 +1,3 @@
-const { propertyOf } = require('lodash');
-const _ = require('lodash');
-
 const dummy = () => 1;
 
 const totalLikes = (blogs) => {
@@ -40,21 +37,23 @@ const mostBlogs = (blogs) => {
         return null;
     }
 
-    const groupedByAuthor = _.reduce(blogs, (result, blog) => {
-        (result[blog.author] || (result[blog.author] = [])).push(blog);
-        return result;
+    const listOfAuthors = blogs.map(blog => blog.author);
+    const blogCountByAuthor = listOfAuthors.reduce((acc, cur) => {
+        acc[cur] ? acc[cur]++ : (acc[cur] = 1);
+        return acc
     }, {});
+    
+    const authors = Object.keys(blogCountByAuthor);
+    const authorCount = Object.values(blogCountByAuthor);
+    
+    const maxCount = Math.max(...authorCount);
+    const index = authorCount.findIndex(value => value === maxCount);
 
-    const authors = _.keys(groupedByAuthor);
-    const blogCount = _.values(groupedByAuthor).map(element => element.length);
-    const maxBlog = Math.max(...blogCount);
-    const maxIndex = blogCount.findIndex(value => value === maxBlog);
-    
     const mostAmntBlogs = {
-        author: authors[maxIndex],
-        blogs: maxBlog
+        author: authors[index],
+        blogs: maxCount
     }
-    
+
     return mostAmntBlogs;
 }
 
