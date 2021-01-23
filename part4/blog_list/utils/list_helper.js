@@ -57,10 +57,41 @@ const mostBlogs = (blogs) => {
     return mostAmntBlogs;
 }
 
+const mostLikes = (blogs) => {
+    if (!blogs || blogs.length === 0 ) {
+        return null;
+    }
+
+    // Hash table: key = Author , bucket = each blog by author
+    const authorHash = blogs.reduce((result, blog) => {
+        (result[blog.author] || (result[blog.author] = [])).push(blog);
+        return result;
+    }, {});
+
+    const authors = Object.keys(authorHash);
+    const groupedBlogs = Object.values(authorHash);
+
+    // Array of blog likes (grouped by author - unlabeled)
+    const likesPerBlog = groupedBlogs.map(author => author.map(blog => blog.likes));
+    // Array of summed blog likes (grouped by author - unlabeled)
+    const totalLikes = likesPerBlog.map(author => author.reduce((a,b) => a + b, 0));
+
+    // Determine highest blog like count and corresponding index
+    const maxLikes = Math.max(...totalLikes);
+    const index = totalLikes.findIndex(numLikes => numLikes === maxLikes);
+
+    const mostLikedAuthor = {
+        author: authors[index],
+        likes: maxLikes
+    }
+
+    return mostLikedAuthor;
+}
+
 module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
     mostBlogs,
-
+    mostLikes
 }
