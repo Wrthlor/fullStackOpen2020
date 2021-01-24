@@ -62,30 +62,27 @@ const mostLikes = (blogs) => {
         return null;
     }
 
-    // Hash table: key = Author , bucket = each blog by author
-    const authorHash = blogs.reduce((result, blog) => {
-        (result[blog.author] || (result[blog.author] = [])).push(blog);
-        return result;
-    }, {});
+    // Create array of only unique authors
+    const listOfAuthors = blogs.map(blog => blog.author);
+    const authors = [...new Set(listOfAuthors)];
 
-    const authors = Object.keys(authorHash);
-    const groupedBlogs = Object.values(authorHash);
+    // Create array of objects (total likes corresponding with author)
+    const authorLikes = authors.map(author => {
+        const likes = blogs
+                        .filter(blog => blog.author === author)
+                        .map(blog => blog.likes)
+                        .reduce((acc, cur) => acc + cur, 0)
+        
+        const authorLikeObject = {
+            author: author,
+            likes: likes
+        }
+        
+        return authorLikeObject;
+    })
 
-    // Array of blog likes (grouped by author - unlabeled)
-    const likesPerBlog = groupedBlogs.map(author => author.map(blog => blog.likes));
-    // Array of summed blog likes (grouped by author - unlabeled)
-    const totalLikes = likesPerBlog.map(author => author.reduce((a,b) => a + b, 0));
-
-    // Determine highest blog like count and corresponding index
-    const maxLikes = Math.max(...totalLikes);
-    const index = totalLikes.findIndex(numLikes => numLikes === maxLikes);
-
-    const mostLikedAuthor = {
-        author: authors[index],
-        likes: maxLikes
-    }
-
-    return mostLikedAuthor;
+    // Determines author with most likes
+    return authorLikes.reduce((a,b) => a.likes > b.likes ? a : b , {})
 }
 
 module.exports = {
