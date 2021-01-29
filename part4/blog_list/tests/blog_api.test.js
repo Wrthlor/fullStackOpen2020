@@ -94,6 +94,39 @@ test('title and url property is missing', async () => {
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
 })
 
+test('deleting blog succeeds with code 204', async () => {
+    const blogAtStart = await helper.blogsInDb();
+    const blogToDelete = blogAtStart[0];
+
+    await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+
+    const titles = blogsAtEnd.map(blog => blog.title);
+    expect(titles).not.toContain(blogToDelete.title);
+})
+
+test('updating number of likes', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send({
+            likes: '123456789'
+        })
+        .expect(200);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+
+    const updatedBlog = blogsAtEnd[0];
+    expect(updatedBlog.likes).toBe(123456789);
+})
+
 afterAll(() => {
     mongoose.connection.close();
 })
