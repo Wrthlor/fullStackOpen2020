@@ -32,3 +32,20 @@ To run the server locally in development mode, run the command: `npm run dev`
 4.13 - Implement functionality to *delete* single blog post
 
 4.14 - Implement functionality to *update amount of likes* for a blog post
+
+### Exercises 4.15 - 4.22
+4.15 - Implement functionality to create new users with HTTP POST-request to address *api/users*. Users will have *username, password* and *name*
+
+4.16 - Implement restrictions when creating new user: username and password must be given and be at least 3 characters long, username must be unique
+
+4.17 - Expand blogs to contain information of blog creator, expand users to display blogs created by each user
+
+4.18 - Implement token-based authentication 
+
+4.19 - Adding new blogs should only be possible if a valid token is sent with HTTP POST request, user identified from token is designated as creator of blog
+
+4.20 - Refactor getTokenFrom() helper function to a middleware
+
+4.21 - Deleting blogs should only be possible by the user who added the blog; using an invalid or missing token should return error
+
+4.22 - Fix test cases to accomodate token authentication
